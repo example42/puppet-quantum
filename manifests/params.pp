@@ -17,13 +17,13 @@ class quantum::params {
   ### Application related parameters
 
   $package = $::operatingsystem ? {
-    /(?i:Debian|Ubuntu|Mint)/ => 'quantum-compute',
-    default                   => 'openstack-quantum-compute',
+    /(?i:Debian|Ubuntu|Mint)/ => 'quantum-server',
+    default                   => 'openstack-quantum',
   }
 
   $service = $::operatingsystem ? {
-    /(?i:Debian|Ubuntu|Mint)/ => 'quantum-compute',
-    default                   => 'openstack-quantum-compute',
+    /(?i:Debian|Ubuntu|Mint)/ => 'quantum',
+    default                   => 'openstack-quantum',
   }
 
   $service_status = $::operatingsystem ? {
@@ -55,11 +55,11 @@ class quantum::params {
   }
 
   $config_file_owner = $::operatingsystem ? {
-    default => 'root',
+    default => 'quantum',
   }
 
   $config_file_group = $::operatingsystem ? {
-    default => 'root',
+    default => 'quantum',
   }
 
   $pid_file = $::operatingsystem ? {
@@ -75,7 +75,7 @@ class quantum::params {
   }
 
   $log_file = $::operatingsystem ? {
-    default => [ '/var/log/quantum/quantum-compute.log' , '/var/log/quantum/quantum-manage.log' ],
+    default => [ '/var/log/quantum/quantum.log' , '/var/log/quantum/quantum-manage.log' ],
   }
 
   $port = '5000'

@@ -322,19 +322,23 @@ class quantum (
   }
 
   ### Managed resources
-  package { $quantum::package:
-    ensure  => $quantum::manage_package,
-    noop    => $quantum::bool_noops,
+  if $quantum::package {
+    package { $quantum::package:
+      ensure  => $quantum::manage_package,
+      noop    => $quantum::bool_noops,
+    }
   }
 
-  service { 'quantum':
-    ensure     => $quantum::manage_service_ensure,
-    name       => $quantum::service,
-    enable     => $quantum::manage_service_enable,
-    hasstatus  => $quantum::service_status,
-    pattern    => $quantum::process,
-    require    => Package[$quantum::package],
-    noop       => $quantum::bool_noops,
+  if $quantum::service {
+    service { 'quantum':
+      ensure     => $quantum::manage_service_ensure,
+      name       => $quantum::service,
+      enable     => $quantum::manage_service_enable,
+      hasstatus  => $quantum::service_status,
+      pattern    => $quantum::process,
+      require    => Package[$quantum::package],
+      noop       => $quantum::bool_noops,
+    }
   }
 
   file { 'quantum.conf':
