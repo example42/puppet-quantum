@@ -42,7 +42,7 @@ define quantum::configfile (
     content => template($template),
     replace => $quantum::manage_file_replace,
     audit   => $quantum::manage_audit,
-    noop    => $quantum::bool_noops,
+    noop    => $quantum::noops,
   }
 
 }

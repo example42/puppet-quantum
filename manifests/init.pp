@@ -128,7 +128,7 @@
 # [*noops*]
 #   Set noop metaparameter to true for all the resources managed by the module.
 #   Basically you can run a dryrun for this specific module if you set
-#   this to true. Default: false
+#   this to true. Default: undef
 #
 # Default class params - As defined in quantum::params.
 # Note that these variables are mostly defined and used in the module itself,
@@ -249,7 +249,6 @@ class quantum (
   $bool_firewall=any2bool($firewall)
   $bool_debug=any2bool($debug)
   $bool_audit_only=any2bool($audit_only)
-  $bool_noops=any2bool($noops)
 
   ### Definition of some variables used in the module
   $manage_package = $quantum::bool_absent ? {
@@ -325,7 +324,7 @@ class quantum (
   if $quantum::package {
     package { $quantum::package:
       ensure  => $quantum::manage_package,
-      noop    => $quantum::bool_noops,
+      noop    => $quantum::noops,
     }
   }
 
@@ -337,7 +336,7 @@ class quantum (
       hasstatus  => $quantum::service_status,
       pattern    => $quantum::process,
       require    => Package[$quantum::package],
-      noop       => $quantum::bool_noops,
+      noop       => $quantum::noops,
     }
   }
 
@@ -353,7 +352,7 @@ class quantum (
     content => $quantum::manage_file_content,
     replace => $quantum::manage_file_replace,
     audit   => $quantum::manage_audit,
-    noop    => $quantum::bool_noops,
+    noop    => $quantum::noops,
   }
 
   # The whole quantum configuration directory can be recursively overriden
@@ -369,7 +368,7 @@ class quantum (
       force   => $quantum::bool_source_dir_purge,
       replace => $quantum::manage_file_replace,
       audit   => $quantum::manage_audit,
-      noop    => $quantum::bool_noops,
+      noop    => $quantum::noops,
     }
   }
 
@@ -382,7 +381,7 @@ class quantum (
 
   ### Provide puppi data, if enabled ( puppi => true )
   if $quantum::bool_puppi == true {
-    include quantum::puppi 
+    include quantum::puppi
   }
 
 
@@ -395,7 +394,7 @@ class quantum (
         target   => $quantum::monitor_target,
         tool     => $quantum::monitor_tool,
         enable   => $quantum::manage_monitor,
-        noop     => $quantum::bool_noops,
+        noop     => $quantum::noops,
       }
     }
     if $quantum::service != '' {
@@ -407,7 +406,7 @@ class quantum (
         argument => $quantum::process_args,
         tool     => $quantum::monitor_tool,
         enable   => $quantum::manage_monitor,
-        noop     => $quantum::bool_noops,
+        noop     => $quantum::noops,
       }
     }
   }
@@ -424,7 +423,7 @@ class quantum (
       direction   => 'input',
       tool        => $quantum::firewall_tool,
       enable      => $quantum::manage_firewall,
-      noop        => $quantum::bool_noops,
+      noop        => $quantum::noops,
     }
   }
 
@@ -438,7 +437,7 @@ class quantum (
       owner   => 'root',
       group   => 'root',
       content => inline_template('<%= scope.to_hash.reject { |k,v| k.to_s =~ /(uptime.*|path|timestamp|free|.*password.*|.*psk.*|.*key)/ }.to_yaml %>'),
-      noop    => $quantum::bool_noops,
+      noop    => $quantum::noops,
     }
   }
 
