@@ -5,11 +5,13 @@
 class quantum::params {
 
   $package_name = $::osfamily ? {
-    default => 'quantum',
+    'Redhat' => 'openstack-quantum',
+    default  => 'quantum-server',
   }
 
   $service_name = $::osfamily ? {
-    default => 'quantum',
+    'Redhat' => 'openstack-quantum',
+    default  => 'quantum',
   }
 
   $config_file_path = $::osfamily ? {
