@@ -23,11 +23,11 @@ class quantum::params {
   }
 
   $config_file_owner = $::osfamily ? {
-    default => 'root',
+    default => 'quantum',
   }
 
   $config_file_group = $::osfamily ? {
-    default => 'root',
+    default => 'quantum',
   }
 
   $config_dir_path = $::osfamily ? {
