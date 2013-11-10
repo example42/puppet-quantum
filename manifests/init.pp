@@ -11,6 +11,8 @@
 #
 class quantum (
 
+  $extra_package_name        = $quantum::params::extra_package_name,
+
   $package_name              = $quantum::params::package_name,
   $package_ensure            = 'present',
 
@@ -83,6 +85,12 @@ class quantum (
 
   if $quantum::package_name {
     package { $quantum::package_name:
+      ensure   => $quantum::package_ensure,
+    }
+  }
+
+  if $quantum::extra_package_name {
+    package { $quantum::extra_package_name:
       ensure   => $quantum::package_ensure,
     }
   }

@@ -105,6 +105,13 @@ The module provides also a generic define to manage any quantum configuration fi
         }
 
 
+* Install extra packages (clients, plugins...). Can be an array. Default: client package.
+
+        class { 'quantum':
+          extra_package_name    => [ 'python-quantum' , 'python-quantumclient' ],
+        }
+
+
 * Use the additional example42 subclass for puppi extensions
 
         class { 'quantum':
