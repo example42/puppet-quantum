@@ -143,7 +143,7 @@ class quantum (
   if $quantum::monitor_class {
     class { $quantum::monitor_class:
       options_hash => $quantum::monitor_options_hash,
-      scope_hash   => {}, # TODO: Find a good way to inject class' scope
+      scope_hash   => {}, # TODO: Find a good way to inject class' scope
     }
   }
 
