@@ -1,16 +1,18 @@
 require 'spec_helper'
 
-describe 'quantum' do
+describe 'quantum::generic_service', :type => :define do
+
+  let(:title) { 'quantum-registry' }
 
   context 'Supported OS - ' do
     ['Debian', 'RedHat'].each do |osfamily|
       describe "#{osfamily} standard installation" do
-        let(:params) {{ }}
+        let(:params) {{  }}
         let(:facts) {{
           :osfamily => osfamily,
         }}
-        it { should contain_package('quantum').with_ensure('present') }
-        it { should contain_service('quantum').with_ensure('running') }
+        it { should contain_package('quantum-registry').with_ensure('present') }
+        it { should contain_service('quantum-registry').with_ensure('running') }
       end
 
       describe "#{osfamily} installation of a specific package version" do
@@ -20,7 +22,7 @@ describe 'quantum' do
         let(:facts) {{
           :osfamily => osfamily,
         }}
-        it { should contain_package('quantum').with_ensure('1.0.42') }
+        it { should contain_package('quantum-registry').with_ensure('1.0.42') }
       end
 
       describe "#{osfamily} removal of package installation" do
@@ -30,10 +32,9 @@ describe 'quantum' do
         let(:facts) {{
           :osfamily => osfamily,
         }}
-        it 'should remove Package[quantum]' do should contain_package('quantum').with_ensure('absent') end
-        it 'should stop Service[quantum]' do should contain_service('quantum').with_ensure('stopped') end
-        it 'should not manage at boot Service[quantum]' do should contain_service('quantum').with_enable(nil) end
-        it 'should remove quantum configuration file' do should contain_file('quantum.conf').with_ensure('absent') end
+        it 'should remove Package[quantum-registry]' do should contain_package('quantum-registry').with_ensure('absent') end
+        it 'should stop Service[quantum-registry]' do should contain_service('quantum-registry').with_ensure('stopped') end
+        it 'should not manage at boot Service[quantum-registry]' do should contain_service('quantum-registry').with_enable(nil) end
       end
 
       describe "#{osfamily} service disabling" do
@@ -44,8 +45,8 @@ describe 'quantum' do
         let(:facts) {{
           :osfamily => osfamily,
         }}
-        it 'should stop Service[quantum]' do should contain_service('quantum').with_ensure('stopped') end
-        it 'should not enable at boot Service[quantum]' do should contain_service('quantum').with_enable('false') end
+        it 'should stop Service[quantum-registry]' do should contain_service('quantum-registry').with_ensure('stopped') end
+        it 'should not enable at boot Service[quantum-registry]' do should contain_service('quantum-registry').with_enable('false') end
       end
 
       describe "#{osfamily} configuration via custom template" do
@@ -56,9 +57,9 @@ describe 'quantum' do
         let(:facts) {{
           :osfamily => osfamily,
         }}
-        it { should contain_file('quantum.conf').with_content(/This is a template used only for rspec tests/) }
+        it { should contain_file('quantum-registry.conf').with_content(/This is a template used only for rspec tests/) }
         it 'should generate a template that uses custom options' do
-          should contain_file('quantum.conf').with_content(/value_a/)
+          should contain_file('quantum-registry.conf').with_content(/value_a/)
         end
       end
 
@@ -69,7 +70,7 @@ describe 'quantum' do
         let(:facts) {{
           :osfamily => osfamily,
         }}
-        it { should contain_file('quantum.conf').with_content(/my_content/) }
+        it { should contain_file('quantum-registry.conf').with_content(/my_content/) }
       end
 
       describe "#{osfamily} configuration via custom source file" do
@@ -79,54 +80,34 @@ describe 'quantum' do
         let(:facts) {{
           :osfamily => osfamily,
         }}
-        it { should contain_file('quantum.conf').with_source('puppet:///modules/quantum/spec.conf') }
-      end
-
-      describe "#{osfamily} configuration via custom source dir" do
-        let(:params) { {
-          :config_dir_source => 'puppet:///modules/quantum/tests/',
-          :config_dir_purge => true
-        } }
-        let(:facts) {{
-          :osfamily => osfamily,
-        }}
-        it { should contain_file('quantum.dir').with_source('puppet:///modules/quantum/tests/') }
-        it { should contain_file('quantum.dir').with_purge('true') }
-        it { should contain_file('quantum.dir').with_force('true') }
+        it { should contain_file('quantum-registry.conf').with_source('puppet:///modules/quantum/spec.conf') }
       end
 
       describe "#{osfamily} service restart on config file change (default)" do
         let(:facts) {{
           :osfamily => osfamily,
         }}
+        let(:params) { {
+          :config_file_content => 'my_content',
+        } }
         it 'should automatically restart the service when files change' do
-          should contain_file('quantum.conf').with_notify('Service[quantum]')
+          should contain_file('quantum-registry.conf').with_notify('Service[quantum-registry]')
         end
       end
 
       describe "#{osfamily} service restart disabling on config file change" do
         let(:params) { {
-          :config_file_notify => '',
+          :config_file_notify  => '',
+          :config_file_content => 'my_content',
         } }
         let(:facts) {{
           :osfamily => osfamily,
         }}
         it 'should automatically restart the service when files change' do
-          should contain_file('quantum.conf').without_notify
+          should contain_file('quantum-registry.conf').without_notify
         end
       end
 
-    end
-  end
-
-  context 'Unsupported OS - ' do
-    describe 'Not supported operating systems should throw and error' do
-      let(:facts) {{
-        :osfamily        => 'Solaris',
-        :operatingsystem => 'Nexenta',
-      }}
-
-      it { expect { should }.to raise_error(Puppet::Error, /Nexenta not supported/) }
     end
   end
 

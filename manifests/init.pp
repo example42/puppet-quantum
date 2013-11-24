@@ -11,7 +11,8 @@
 #
 class quantum (
 
-  $extra_package_name        = $quantum::params::extra_package_name,
+  $conf_hash                 = undef,
+  $generic_service_hash      = undef,
 
   $package_name              = $quantum::params::package_name,
   $package_ensure            = 'present',
@@ -23,7 +24,7 @@ class quantum (
   $config_file_path          = $quantum::params::config_file_path,
   $config_file_replace       = $quantum::params::config_file_replace,
   $config_file_require       = 'Package[quantum]',
-  $config_file_notify        = 'Service[quantum]',
+  $config_file_notify        = 'class_default',
   $config_file_source        = undef,
   $config_file_template      = undef,
   $config_file_content       = undef,
@@ -66,7 +67,11 @@ class quantum (
 
   $manage_config_file_content = default_content($config_file_content, $config_file_template)
 
-  $manage_config_file_notify = pickx($config_file_notify)
+  $manage_config_file_notify  = $config_file_notify ? {
+    'class_default' => 'Service[quantum]',
+    ''              => undef,
+    default         => $config_file_notify,
+  }
 
   if $package_ensure == 'absent' {
     $manage_service_enable = undef
@@ -84,21 +89,9 @@ class quantum (
   # Resources managed
 
   if $quantum::package_name {
-    package { $quantum::package_name:
+    package { 'quantum':
       ensure   => $quantum::package_ensure,
-    }
-  }
-
-  if $quantum::extra_package_name {
-    package { $quantum::extra_package_name:
-      ensure   => $quantum::package_ensure,
-    }
-  }
-
-  if $quantum::service_name {
-    service { $quantum::service_name:
-      ensure     => $quantum::manage_service_ensure,
-      enable     => $quantum::manage_service_enable,
+      name     => $quantum::package_name,
     }
   }
 
@@ -124,13 +117,29 @@ class quantum (
       recurse => $quantum::config_dir_recurse,
       purge   => $quantum::config_dir_purge,
       force   => $quantum::config_dir_purge,
-      notify  => $quantum::config_file_notify,
+      notify  => $quantum::manage_config_file_notify,
       require => $quantum::config_file_require,
+    }
+  }
+
+  if $quantum::service_name {
+    service { 'quantum':
+      ensure     => $quantum::manage_service_ensure,
+      name       => $quantum::service_name,
+      enable     => $quantum::manage_service_enable,
     }
   }
 
 
   # Extra classes
+  if $conf_hash {
+    create_resources('quantum::conf', $conf_hash)
+  }
+
+  if $generic_service_hash {
+    create_resources('quantum::generic_service', $generic_service_hash)
+  }
+
 
   if $quantum::dependency_class {
     include $quantum::dependency_class

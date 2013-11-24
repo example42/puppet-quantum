@@ -14,27 +14,28 @@
 
 ##Overview
 
-This module installs, manages and configures quantum.
+This module installs, manages and configures quantum and its services.
 
 ##Module Description
 
 The module is based on **stdmod** naming standards version 0.9.0.
 
-Refer to http://github.com/stdmod/ for complete documentation on the common parameters.
+Refer to [http://github.com/stdmod/](http://github.com/stdmod/) for complete documentation on the common parameters.
 
-For a fully puppetized OpenStack implementation you'd better use the [official StackForge modules](https://github.com/stackforge/puppet-openstack).
-This module is intended to be a quick replacement for scenarios where you need to manage configurations based on plain templates or where you have to puppettize an existing OpenStack setup.
+For a fully automated Puppet setup of OpenStack you'd better use the official [StackForge modules](https://github.com/stackforge/puppet-openstack).
+This module is intended to be a quick replacement for setups where you want to manage configurations based on plain template files or where you want to puppettize an existing OpenStack installation.
 
 ##Setup
 
 ###Resources managed by quantum module
-* This module installs the quantum package
-* Enables the quantum service
+* This module installs the quantum package (in case of multiple services, the quantum-api package is installed)
+* Enables the quantum service (in case of multiple services, the quantum-api service is managed)
 * Can manage all the configuration files (by default no file is changed)
+* Can manage any quantum service and its configuration file (by default no file is changed)
 
 ###Setup Requirements
-* PuppetLabs stdlib module
-* StdMod stdmod module
+* PuppetLabs [stdlib module](https://github.com/puppetlabs/puppetlabs-stdlib)
+* StdMod [stdmod module](https://github.com/stdmod/stdmod)
 * Puppet version >= 2.7.x
 * Facter version >= 1.6.2
 
@@ -50,12 +51,21 @@ The main class arguments can be provided either via Hiera (from Puppet 3.x) or d
           parameter => value,
         }
 
-The module provides also a generic define to manage any quantum configuration file:
+The module provides a generic define to manage any quantum configuration file in /etc/quantum:
 
         quantum::conf { 'sample.conf':
           content => '# Test',
         }
 
+A define to manage the package/service/configfile of single quantum services. To install the package and run the service:
+
+        quantum::generic_service { 'quantum-registry': }
+
+To provide a configuration file for the service (alternative to quantum::conf):
+
+        quantum::generic_service { 'quantum-registry':
+          config_file_template => 'site/quantum/quantum-registry.conf
+        }
 
 ##Usage
 
@@ -83,7 +93,7 @@ The module provides also a generic define to manage any quantum configuration fi
         }
 
 
-* Use custom source directory for the whole configuration directory, where present.
+* Recurse from a custom source directory for the whole configuration directory (/etc/quantum).
 
         class { 'quantum':
           config_dir_source  => 'puppet:///modules/site/quantum/conf/',
@@ -104,20 +114,11 @@ The module provides also a generic define to manage any quantum configuration fi
           config_dir_recursion => false, # Default: true.
         }
 
-
-* Install extra packages (clients, plugins...). Can be an array. Default: client package.
-
-        class { 'quantum':
-          extra_package_name    => [ 'python-quantum' , 'python-quantumclient' ],
-        }
-
-
-* Use the additional example42 subclass for puppi extensions
+* Do not trigger a service restart when a config file changes.
 
         class { 'quantum':
-          my_class => 'quantum::example42'
+          config_dir_notify => '', # Default: Service[quantum]
         }
-
 
 ##Operating Systems Support
 
