@@ -4,18 +4,14 @@
 #
 class quantum::params {
 
-  $extra_package_name = $::osfamily ? {
-    default  => 'python-quantum',
-  }
-
   $package_name = $::osfamily ? {
     'Redhat' => 'openstack-quantum',
     default  => 'quantum-server',
   }
 
   $service_name = $::osfamily ? {
-    'Redhat' => 'openstack-quantum',
-    default  => 'quantum',
+    'Redhat' => 'openstack-quantum-server',
+    default  => 'quantum-server',
   }
 
   $config_file_path = $::osfamily ? {
