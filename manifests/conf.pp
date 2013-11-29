@@ -70,7 +70,7 @@ define quantum::conf (
   include quantum
 
   $manage_path    = pickx($path, "${quantum::config_dir_path}/${name}")
-  $manage_content = choose_default($content, $template)
+  $manage_content = default_content($content, $template)
   $manage_mode    = pickx($mode, $quantum::config_file_mode)
   $manage_owner   = pickx($owner, $quantum::config_file_owner)
   $manage_group   = pickx($group, $quantum::config_file_group)
