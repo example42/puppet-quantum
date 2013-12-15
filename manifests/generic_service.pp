@@ -47,8 +47,16 @@ define quantum::generic_service (
     $manage_service_ensure = stopped
     $config_file_ensure = absent
   } else {
-    $manage_service_enable = $service_enable
-    $manage_service_ensure = $service_ensure
+    $manage_service_enable = $service_enable ? {
+      ''      => undef,
+      'undef' => undef,
+      default => $service_enable,
+    }
+    $manage_service_ensure = $service_ensure ? {
+      ''      => undef,
+      'undef' => undef,
+      default => $service_ensure,
+    }
     $config_file_ensure = present
   }
 
