@@ -42,6 +42,7 @@ define quantum::generic_service (
     'default'       => "Package[${name}]",
     default         => $config_file_require,
   }
+
   if $package_ensure == 'absent' {
     $manage_service_enable = undef
     $manage_service_ensure = stopped
@@ -59,9 +60,6 @@ define quantum::generic_service (
     }
     $config_file_ensure = present
   }
-
-
-
 
   if ($manage_package_name) {
     package { $name:
